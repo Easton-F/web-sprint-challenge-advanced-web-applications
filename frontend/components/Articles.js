@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react'
-import { Navigate } from 'react-router-dom'
 import PT from 'prop-types'
-import { getArticles } from '../../backend/helpers'
+import { Navigate } from 'react-router-dom';
 
 export default function Articles(props) {
   // ✨ where are my props? Destructure them here
-  const { getArticles } = props
+  const { getArticles, articles, setCurrentArticleId, currentArticleId, deleteArticle } = props
 
   // ✨ implement conditional logic: if no token exists
   // we should render a Navigate to login screen (React Router v.6)
@@ -13,17 +12,18 @@ export default function Articles(props) {
   useEffect(() => {
     // ✨ grab the articles here, on first render only
     getArticles();
-  })
+  }, [])
 
-  return (
+  return ( 
     // ✨ fix the JSX: replace `Function.prototype` with actual functions
     // and use the articles prop to generate articles
+    localStorage.getItem('token') ? 
     <div className="articles">
       <h2>Articles</h2>
       {
-        ![].length
+        !articles.length
           ? 'No articles yet'
-          : [].map(art => {
+          : articles.map(art => {
             return (
               <div className="article" key={art.article_id}>
                 <div>
@@ -32,15 +32,17 @@ export default function Articles(props) {
                   <p>Topic: {art.topic}</p>
                 </div>
                 <div>
-                  <button disabled={true} onClick={Function.prototype}>Edit</button>
-                  <button disabled={true} onClick={Function.prototype}>Delete</button>
+                  <button disabled={currentArticleId} onClick={()=> {
+                    setCurrentArticleId(art.article_id)
+                  }}>Edit</button>
+                  <button disabled={currentArticleId} onClick={()=> {deleteArticle(art.article_id)}}>Delete</button>
                 </div>
               </div>
             )
           })
       }
-    </div>
-  )
+    </div> : <Navigate to={'/'}/>
+  ) 
 }
 
 // 🔥 No touchy: Articles expects the following props exactly:
